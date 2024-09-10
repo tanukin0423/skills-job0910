@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詳細適職診断 - 能力要素評価</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #2652a3;
+        }
+        h1 {
+            text-align: center;
+        }
+        .skill-container {
+            margin-bottom: 15px;
+        }
+        .skill-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .skill-description {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #2652a3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1c3f7c;
+        }
+        #result {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .job-match {
+            margin-bottom: 10px;
+        }
+        .job-name {
+            font-weight: bold;
+        }
+        .job-score {
+            color: #2652a3;
+        }
+        #chart-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>詳細適職診断 - 能力要素評価</h1>
+    <div id="skills-form">
+        <!-- スキル評価バーはJavaScriptで動的に生成されます -->
+    </div>
+    <button onclick="calculateResult()">結果を見る</button>
+    <div id="result"></div>
+    <div id="chart-container">
+        <canvas id="skillChart"></canvas>
+    </div>
+
+    <script>
+        const skills = [
+            { name: "コミュニケーション能力", description: "他者と効果的に意思疎通を図る能力" },
+            { name: "交渉力", description: "合意形成や利害調整を行う能力" },
+            { name: "目標達成力", description: "設定された目標を達成するための計画立案と実行能力" },
+            { name: "顧客理解", description: "顧客のニーズや要望を正確に把握する能力" },
+            { name: "プレゼンテーションスキル", description: "情報や提案を効果的に伝える能力" },
+            { name: "組織力", description: "効率的に業務を整理し、管理する能力" },
+            { name: "時間管理", description: "効率的にタスクを管理し、締め切りを守る能力" },
+            { name: "パソコンスキル", description: "コンピューターやソフトウェアを効果的に使用する能力" },
+            { name: "正確性", description: "細部まで注意を払い、ミスを最小限に抑える能力" },
+            { name: "マルチタスク能力", description: "複数の任務を同時に効率よく遂行する能力" },
+            { name: "感情知能", description: "自己と他者の感情を理解し、適切に対応する能力" },
+            { name: "忍耐力", description: "困難な状況下でも粘り強く取り組む能力" },
+            { name: "問題解決能力", description: "課題を特定し、効果的な解決策を見出す能力" },
+            { name: "ストレス耐性", description: "高ストレス環境下でも効果的に機能する能力" },
+            { name: "商品知識", description: "取り扱う製品やサービスについての深い理解" },
+            { name: "数学的思考", description: "数値データを理解し、分析する能力" },
+            { name: "技術スキル", description: "特定の分野や技術に関する専門知識" },
+            { name: "継続的学習", description: "新しい知識やスキルを常に吸収し続ける能力" },
+            { name: "チームワーク", description: "他者と協力して目標を達成する能力" },
+            { name: "体力", description: "肉体的な労働や長時間の作業に耐える能力" },
+            { name: "医療知識", description: "基本的な医療や健康管理に関する知識" },
+            { name: "創造性", description: "新しいアイデアを生み出し、革新的な思考をする能力" },
+            { name: "リーダーシップ", description: "他者を導き、motivateする能力" },
+            { name: "空間認識能力", description: "物体の位置関係や空間的な構造を理解する能力" },
+            { name: "安全意識", description: "作業環境の安全性を維持し、リスクを最小化する能力" },
+            { name: "衛生管理", description: "清潔で衛生的な環境を維持する能力" },
+            { name: "品質管理", description: "製品やサービスの品質を一定に保つ能力" },
+            { name: "リスク管理", description: "潜在的なリスクを特定し、対策を立てる能力" },
+            { name: "分析力", description: "データや情報を解釈し、洞察を得る能力" },
+            { name: "倫理観", description: "高い道徳基準を維持し、倫理的な判断を下す能力" },
+            { name: "トレンド分析", description: "市場動向や社会の変化を察知し、予測する能力" },
+            { name: "批判的思考", description: "情報を客観的に評価し、論理的に考える能力" },
+            { name: "文章力", description: "明確で説得力のある文章を書く能力" },
+            { name: "専門知識", description: "特定の分野における深い知識と理解" },
+            { name: "適応力", description: "変化に柔軟に対応する能力" },
+            { name: "業界知識", description: "特定の業界に関する包括的な理解" },
+            { name: "外国語能力", description: "1つ以上の外国語でコミュニケーションを取る能力" },
+            { name: "情報収集能力", description: "必要な情報を効率的に収集し、整理する能力" },
+            { name: "クリエイティブ思考", description: "従来の枠にとらわれない、新しい発想ができる能力" }
+        ];
+
+        const jobs = [
+            { 
+                name: "営業職", 
+                skills: ["コミュニケーション能力", "交渉力", "目標達成力", "顧客理解", "プレゼンテーションスキル"],
+                description: "営業職は、製品やサービスを顧客に提案し、販売する役割を担います。高いコミュニケーション能力と交渉力が求められ、顧客のニーズを深く理解し、適切な提案ができる能力が重要です。目標達成へのmotivationと、効果的なプレゼンテーションスキルも成功の鍵となります。"
+            },
+            { 
+                name: "事務職", 
+                skills: ["組織力", "時間管理", "パソコンスキル", "正確性", "マルチタスク能力"],
+                description: "事務職は、組織の円滑な運営をサポートする重要な役割を果たします。高い組織力と時間管理能力が求められ、複数のタスクを同時にこなすマルチタスク能力も重要です。また、パソコンスキルと正確性は、効率的で信頼性の高い業務遂行に不可欠です。"
+            },
+            { 
+                name: "接客業", 
+                skills: ["コミュニケーション能力", "感情知能", "忍耐力", "問題解決能力", "ストレス耐性"],
+                description: "接客業は、顧客満足度の向上を目指す重要な職種です。高いコミュニケーション能力と感情知能が求められ、様々な状況下での忍耐力とストレス耐性も必要です。顧客の問題や要望に迅速かつ効果的に対応する問題解決能力も、成功には不可欠です。"
+            },
+            { 
+                name: "販売員", 
+                skills: ["コミュニケーション能力", "商品知識", "目標達成力", "顧客理解", "数学的思考"],
+                description: "販売員は、商品やサービスを直接顧客に提供する重要な役割を担います。高いコミュニケーション能力と深い商品知識が求められ、顧客のニーズを正確に理解し、適切な提案ができる能力が重要です。また、売上目標の達成に向けた数学的思考力も必要とされます。"
+            },
+            { 
+                name: "技術職（IT）", 
+                skills: ["技術スキル", "問題解決能力", "継続的学習", "チームワーク", "創造性"],
+                description: "IT技術職は、rapidly変化する技術環境で重要な役割を果たします。高度な技術スキルと問題解決能力が求められ、新技術の習得のための継続的学習能力も重要です。また、プロジェクトを成功させるためのチームワークと、革新的なソリューションを生み出す創造性も必要不可欠です。"
+            },
+            { 
+                name: "介護職", 
+                skills: ["感情知能", "体力", "忍耐力", "医療知識", "コミュニケーション能力"],
+                description: "介護職は、人々の生活の質を向上させる重要な役割を担います。高い感情知能とコミュニケーション能力が求められ、身体的なケアを行うための体力も必要です。また、忍耐力と基本的な医療知識は、質の高い介護サービスを提供するために不可欠です。"
+            },
+            { 
+                name: "教育関連職", 
+                skills: ["コミュニケーション能力", "忍耐力", "創造性", "リーダーシップ", "継続的学習"],
+                description: "教育関連職は、次世代の育成に携わる重要な役割を担います。高いコミュニケーション能力と忍耐力が求められ、生徒の興味を引き出す創造性も重要です。また、クラスをmotivateし、導くリーダーシップと、常に新しい教育方法を学ぶ継続的学習能力も必要です。"
+            },
+            { 
+                name: "物流関連職", 
+                skills: ["組織力", "時間管理", "空間認識能力", "安全意識", "体力"],
+                description: "物流関連職は、効率的な商品の流通を支える重要な役割を果たします。高い組織力と時間管理能力が求められ、商品の配置や輸送のための空間認識能力も重要です。また、安全な作業環境を維持するための安全意識と、肉体労働に耐える体力も必要不可欠です。"
+            },
+            { 
+                name: "飲食業", 
+                skills: ["コミュニケーション能力", "時間管理", "体力", "衛生管理", "ストレス耐性"],
+                description: "飲食業は、顧客に食事と快適な空間を提供する重要な役割を担います。高いコミュニケーション能力と時間管理能力が求められ、長時間の立ち仕事に耐える体力も必要です。また、食品の安全性を確保するための衛生管理能力と、忙しい環境下でのストレス耐性も重要です。"
+            },
+            { 
+                name: "製造業", 
+                skills: ["技術スキル", "正確性", "チームワーク", "安全意識", "品質管理"],
+                description: "製造業は、高品質な製品を効率的に生産する重要な役割を担います。特定の製造技術に関する技術スキルと高い正確性が求められ、生産ラインでのチームワークも重要です。また、作業環境の安全を維持する安全意識と、製品の品質を一定に保つ品質管理能力も必要不可欠です。"
+            },
+             { 
+                name: "金融関連職", 
+                skills: ["数学的思考", "リスク管理", "コミュニケーション能力", "分析力", "倫理観"],
+                description: "金融関連職は、個人や組織の財務管理を支援する重要な役割を担います。高度な数学的思考力とリスク管理能力が求められ、複雑な金融データを分析する能力も重要です。また、顧客や同僚とのコミュニケーション能力と、高い倫理観を持って業務を遂行することも必要不可欠です。常に変化する金融市場に対応するため、継続的な学習も求められます。"
+            },
+            { 
+                name: "クリエイティブ職", 
+                skills: ["創造性", "技術スキル", "時間管理", "批判的思考", "トレンド分析"],
+                description: "クリエイティブ職は、独創的なアイデアや作品を生み出す重要な役割を担います。高い創造性と関連する技術スキルが求められ、プロジェクトを期限内に完了させるための時間管理能力も重要です。また、自身の作品を客観的に評価する批判的思考力と、市場動向を把握するトレンド分析能力も成功には欠かせません。常に新しい表現方法を模索し、自己啓発を続ける姿勢が求められます。"
+            },
+            { 
+                name: "研究職", 
+                skills: ["分析力", "論理的思考", "忍耐力", "創造性", "文章力"],
+                description: "研究職は、新しい知識や技術を生み出す重要な役割を担います。高度な分析力と論理的思考能力が求められ、長期的な研究プロジェクトに取り組むための忍耐力も必要です。また、新しい仮説を立てる創造性と、研究結果を明確に伝える文章力も重要です。専門分野における深い知識と、常に最新の研究動向をフォローする姿勢が求められます。"
+            },
+            { 
+                name: "医療関連職", 
+                skills: ["専門知識", "コミュニケーション能力", "倫理観", "ストレス耐性", "継続的学習"],
+                description: "医療関連職は、人々の健康と生命を守る重要な役割を担います。高度な専門知識とコミュニケーション能力が求められ、患者や家族と適切に接する能力が重要です。また、高い倫理観を持って判断を下し、ストレスの多い環境下でも冷静に対応する能力が必要です。医療技術の急速な進歩に対応するため、継続的な学習も欠かせません。"
+            },
+            { 
+                name: "コンサルタント", 
+                skills: ["分析力", "コミュニケーション能力", "問題解決能力", "プレゼンテーションスキル", "業界知識"],
+                description: "コンサルタントは、企業や組織の問題解決や戦略立案を支援する重要な役割を担います。高度な分析力と問題解決能力が求められ、クライアントのニーズを正確に理解し、効果的な解決策を提案するコミュニケーション能力も重要です。また、提案内容を説得力あるプレゼンテーションで伝える能力や、幅広い業界知識も必要です。常に新しい知識やスキルを吸収し、変化するビジネス環境に適応する能力が求められます。"
+            },
+            { 
+                name: "人事・採用担当", 
+                skills: ["コミュニケーション能力", "判断力", "倫理観", "組織力", "感情知能"],
+                description: "人事・採用担当は、組織の人材管理と育成を担う重要な役割を果たします。高いコミュニケーション能力と的確な判断力が求められ、公平かつ倫理的な採用・評価プロセスを維持する能力も重要です。また、組織全体の人材ニーズを把握し、効果的な人材配置を行う組織力や、従業員の感情や motivationを理解し適切に対応する感情知能も必要です。労働法規や人材開発のトレンドに常に注意を払い、組織の成長を人材面から支える役割が期待されます。"
+            },
+            { 
+                name: "マーケティング担当", 
+                skills: ["創造性", "分析力", "コミュニケーション能力", "トレンド分析", "戦略的思考"],
+                description: "マーケティング担当は、製品やサービスの価値を顧客に効果的に伝える重要な役割を担います。高い創造性と分析力が求められ、市場動向やPRGUが消費者行動を正確に分析する能力が重要です。また、多様な媒体を通じて効果的なメッセージを発信するコミュニケーション能力や、将来のPRGUトレンドを予測する能力も必要です。常に変化する市場環境に適応し、新しいマーケティング手法を学び続ける姿勢が求められます。"
+            },
+            { 
+                name: "起業家", 
+                skills: ["リーダーシップ", "リスク管理", "創造性", "適応力", "戦略的思考"],
+                description: "起業家は、新しいビジネスを創造し成長させる重要な役割を担います。強いリーダーシップと適切なリスク管理能力が求められ、革新的なアイデアを生み出す創造性も重要です。また、rapidly変化するビジネス環境に適応する能力や、長期的な成功を見据えた戦略的思考力も必要不可欠です。多岐にわたる業務をこなすための幅広い知識と、失敗を恐れず挑戦し続ける精神力が求められます。"
+            },
+            { 
+                name: "ジャーナリスト", 
+                skills: ["文章力", "コミュニケーション能力", "情報収集能力", "批判的思考", "倫理観"],
+                description: "ジャーナリストは、社会に重要な情報を提供し、真実を追求する役割を担います。優れた文章力とコミュニケーション能力が求められ、多様な情報源から正確に情報を収集する能力も重要です。また、収集した情報を客観的に分析する批判的思考力や、高い倫理観を持って報道する姿勢も必要不可欠です。常に変化する社会情勢に敏感であり、複雑な問題を分かりやすく伝える能力が求められます。"
+            },
+            { 
+                name: "プロジェクトマネージャー", 
+                skills: ["リーダーシップ", "問題解決能力", "時間管理", "コミュニケーション能力", "リスク管理"],
+                description: "プロジェクトマネージャーは、複雑なプロジェクトを効果的に管理し、目標を達成する重要な役割を担います。強いリーダーシップと高度な問題解決能力が求められ、厳格な時間管理とリソース配分能力も重要です。また、多様なステークホルダーと効果的にコミュニケーションを取る能力や、プロジェクトのリスクを予測し管理する能力も必要不可欠です。常に変化するプロジェクト環境に適応し、チームをmotivateし続ける能力が求められます。"
+            }
+        ];
+
+        function createSkillsForm() {
+            const form = document.getElementById('skills-form');
+            skills.forEach(skill => {
+                const container = document.createElement('div');
+                container.className = 'skill-container';
+                container.innerHTML = `
+                    <div class="skill-name">${skill.name}</div>
+                    <div class="skill-description">${skill.description}</div>
+                    <input type="range" id="${skill.name}" min="1" max="5" value="3">
+                `;
+                form.appendChild(container);
+            });
+        }
+
+        function calculateResult() {
+            const userSkills = skills.map(skill => ({
+                name: skill.name,
+                level: parseInt(document.getElementById(skill.name).value)
+            }));
+
+            const jobMatches = jobs.map(job => {
+                const score = job.skills.reduce((sum, skill) => {
+                    const userSkill = userSkills.find(s => s.name === skill);
+                    return sum + (userSkill ? userSkill.level : 0);
+                }, 0) / job.skills.length;
+                return { name: job.name, score: score };
+            }).sort((a, b) => b.score - a.score);
+
+            displayResult(jobMatches, userSkills);
+            createRadarChart(userSkills);
+        }
+
+        function displayResult(jobMatches, userSkills) {
+            const resultDiv = document.getElementById('result');
+            let resultHTML = '<h2>適職診断結果</h2>';
+
+            // 上位3つの職業を表示
+            resultHTML += '<h3>あなたに適している可能性が高い職業：</h3>';
+            jobMatches.slice(0, 3).forEach(job => {
+                const jobInfo = jobs.find(j => j.name === job.name);
+                resultHTML += `
+                    <div class="job-match">
+                        <h4 class="job-name">${job.name}</h4>
+                        <p class="job-score">適合度: ${(job.score * 20).toFixed(1)}%</p>
+                        <p>${jobInfo.description}</p>
+                        <p><strong>重要なスキル:</strong> ${jobInfo.skills.join(', ')}</p>
+                    </div>
+                `;
+            });
+
+            // スキル評価の概要
+            resultHTML += '<h3>あなたのスキル評価：</h3>';
+            resultHTML += '<ul>';
+            userSkills.forEach(skill => {
+                resultHTML += `<li>${skill.name}: ${'★'.repeat(skill.level)}${'☆'.repeat(5 - skill.level)}</li>`;
+            });
+            resultHTML += '</ul>';
+
+            // 総合アドバイス
+            resultHTML += '<h3>総合アドバイス：</h3>';
+            resultHTML += '<p>あなたの強みを活かし、興味のある分野でキャリアを築いていくことをおすすめします。';
+            resultHTML += '適性が高いと判断された職業について、さらに詳しく調べてみるのも良いでしょう。';
+            resultHTML += 'また、改善の余地があるスキルについては、継続的な学習や経験を通じて向上させていくことで、';
+            resultHTML += 'キャリアの可能性がさらに広がります。自己分析と能力開発を続けながら、';
+            resultHTML += 'あなたにとって最適な職業選択を行ってください。</p>';
+
+            resultDiv.innerHTML = resultHTML;
+        }
+
+        function createRadarChart(userSkills) {
+            const ctx = document.getElementById('skillChart').getContext('2d');
+            const chartSkills = userSkills.slice(0, 10); // 上位10スキルのみ表示
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: chartSkills.map(skill => skill.name),
+                    datasets: [{
+                        label: 'あなたのスキルレベル',
+                        data: chartSkills.map(skill => skill.level),
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        pointBackgroundColor: 'rgb(54, 162, 235)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(54, 162, 235)'
+                    }]
+                },
+                options: {
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 5
+                        }
+                    }
+                }
+            });
+        }
+
+        // ページ読み込み時にスキルフォームを生成
+        window.onload = createSkillsForm;
+    </script>
+</body>
+</html>
