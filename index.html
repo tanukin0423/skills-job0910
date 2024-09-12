@@ -171,11 +171,11 @@
     name: "思考系", 
     skills: [
       "問題解決能力", 
-      "客観的判断思考", 
       "分析力", 
       "論理的思考", 
       "システム思考", 
-      "戦略的思考"
+      "戦略的思考",
+      "客観的判断力" // "客観的判断思考"を"客観的判断力"に変更
     ] 
   },
   creative: { 
@@ -333,11 +333,11 @@ const jobs = [
         categories: ["communication", "management", "cognitive", "interpersonal"]
     },
     { 
-        name: "一般的なコンサルタント職", 
-        skills: ["問題解決能力", "分析力", "プレゼンテーションスキル", "ビジネス戦略", "コミュニケーション能力", "創造性", "客観的判断思考", "マーケット分析", "柔軟性"],
-        description: "クライアント企業の経営課題を分析し、解決策を提案・実行支援する役割を担います。",
-        categories: ["cognitive", "communication", "businessKnowledge", "creative", "interpersonal"]
-    },
+    name: "一般的なコンサルタント職", 
+    skills: ["問題解決能力", "分析力", "プレゼンテーションスキル", "ビジネス戦略", "コミュニケーション能力", "創造性", "客観的判断力", "マーケット分析", "柔軟性"],
+    description: "クライアント企業の経営課題を分析し、解決策を提案・実行支援する役割を担います。",
+    categories: ["cognitive", "communication", "businessKnowledge", "creative", "interpersonal"]
+  },
     { 
         name: "営業アシスタント職", 
         skills: ["コミュニケーション能力", "パソコンスキル", "時間管理", "組織力", "顧客理解", "適応力"],
@@ -381,63 +381,6 @@ const jobs = [
         }
 
         function findMatchingJobs() {
-            const selectedSkills = Array.from(document.querySelectorAll('.skill-item.selected')).map(item => item.textContent);
-            const matchingJobs = jobs.map(job => {
-                const matchingSkillsCount = job.skills.filter(skill => selectedSkills.includes(skill)).length;
-                const totalSelectedSkills = selectedSkills.length;
-                // スキルのマッチ率と選択されたスキルの数を考慮してスコアを計算
-                const score = (matchingSkillsCount / job.skills.length) * (matchingSkillsCount / totalSelectedSkills) * 100;
-                return { ...job, matchPercentage: score };
-            }).sort((a, b) => b.matchPercentage - a.matchPercentage);
-
-            displayResults(matchingJobs.slice(0, 5));
-        }
-
-        function displaySkills() {
-    const skillCategoriesDiv = document.getElementById('skillCategories');
-    for (let category in skillCategories) {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'skill-category';
-        categoryDiv.innerHTML = `<div class="category-title">${skillCategories[category].name}</div>`;
-        const skillListDiv = document.createElement('div');
-        skillListDiv.className = 'skill-list';
-        skillCategories[category].skills.forEach(skill => {
-            const skillItem = document.createElement('div');
-            skillItem.className = `skill-item ${category}`;
-            skillItem.textContent = skill;
-            skillItem.onclick = function() {
-                this.classList.toggle('selected');
-            };
-            skillListDiv.appendChild(skillItem);
-        });
-        categoryDiv.appendChild(skillListDiv);
-        skillCategoriesDiv.appendChild(categoryDiv);
-    }
-}
-
-function findMatchingJobs() {
-    const selectedSkills = Array.from(document.querySelectorAll('.skill-item.selected')).map(item => item.textContent);
-    const matchingJobs = jobs.map(job => {
-        const matchingSkillsCount = job.skills.filter(skill => selectedSkills.includes(skill)).length;
-        const jobSkillsCount = job.skills.length;
-        const selectedSkillsCount = selectedSkills.length;
-        
-        // スキルのマッチ率を計算（職業が必要とするスキルのうち、ユーザーが持つスキルの割合）
-        const matchRate = matchingSkillsCount / jobSkillsCount;
-        
-        // ユーザーが選択したスキルのうち、職業に関連するスキルの割合
-        const relevanceRate = matchingSkillsCount / selectedSkillsCount;
-        
-        // 総合スコアの計算（マッチ率と関連率の調和平均）
-        const score = 2 / (1/matchRate + 1/relevanceRate) * 100;
-        
-        return { ...job, matchPercentage: score, matchingSkillsCount, jobSkillsCount };
-    }).sort((a, b) => b.matchPercentage - a.matchPercentage);
-
-    displayResults(matchingJobs.slice(0, 5));
-}
-
-function findMatchingJobs() {
     const selectedSkills = Array.from(document.querySelectorAll('.skill-item.selected')).map(item => item.textContent);
     const matchingJobs = jobs.map(job => {
         const matchingSkillsCount = job.skills.filter(skill => selectedSkills.includes(skill)).length;
@@ -456,18 +399,24 @@ function findMatchingJobs() {
         ));
         const categoryMatchRate = job.categories.filter(cat => userCategories.has(cat)).length / job.categories.length;
         
-        // 職種の入社のしやすさを考慮（新しく追加した職種にボーナスを与える）
-        const entryLevelBonus = ["営業アシスタント職", "カスタマーサポート職", "Web制作アシスタント職"].includes(job.name) ? 0.1 : 0;
+        // 完全マッチボーナスを計算
+        const perfectMatchBonus = matchingSkillsCount === jobSkillsCount ? 1 : 0;
         
-        // 総合スコアの計算（マッチ率、関連率、カテゴリーマッチ度、入社のしやすさの重み付け平均）
-        const score = (matchRate * 0.35 + relevanceRate * 0.25 + categoryMatchRate * 0.3 + entryLevelBonus * 0.1) * 100;
+        // 総合スコアの計算
+        let score = (matchRate * 0.4 + relevanceRate * 0.3 + categoryMatchRate * 0.3) * 100;
+        
+        // 完全マッチの場合、スコアを100%にする
+        if (perfectMatchBonus === 1) {
+            score = 100;
+        }
         
         return { 
             ...job, 
             matchPercentage: score, 
             matchingSkillsCount, 
             jobSkillsCount,
-            categoryMatchRate
+            categoryMatchRate,
+            isPerfectMatch: perfectMatchBonus === 1
         };
     }).sort((a, b) => b.matchPercentage - a.matchPercentage);
 
@@ -485,10 +434,10 @@ function displayResults(matchingJobs) {
         
         resultDiv.innerHTML += `
             <div class="job-result">
-                <h3>${job.name} (マッチ度: ${job.matchPercentage.toFixed(1)}%)</h3>
+                <h3>${job.name} (マッチ度: ${job.matchPercentage.toFixed(1)}%${job.isPerfectMatch ? ' - 完全マッチ!' : ''})</h3>
                 <p>${job.description}</p>
                 <p><strong>マッチしたスキル (${job.matchingSkillsCount}/${job.jobSkillsCount}):</strong> ${matchingSkills.join(', ')}</p>
-                <p><strong>さらに伸ばすとよいスキル:</strong> ${missingSkills.join(', ')}</p>
+                <p><strong>さらに伸ばすとよいスキル:</strong> ${missingSkills.length > 0 ? missingSkills.join(', ') : 'なし（完全マッチ）'}</p>
                 <p><strong>関連する分野:</strong> ${job.categories.map(cat => skillCategories[cat].name).join(', ')}</p>
                 <p><strong>分野マッチ度:</strong> ${(job.categoryMatchRate * 100).toFixed(1)}%</p>
             </div>
