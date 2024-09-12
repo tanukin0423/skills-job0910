@@ -59,16 +59,20 @@
         .communication.selected { background-color: #ff6b6b; }
         .technical { background-color: #bce6ff; }
         .technical.selected { background-color: #4dabf7; }
-        .personal { background-color: #d8f5a2; }
-        .personal.selected { background-color: #94d82d; }
+        .personal { background-color: #f5a2e3; }
+        .personal.selected { background-color: #d82d96; }
         .management { background-color: #ffd8a8; }
         .management.selected { background-color: #ffa94d; }
         .cognitive { background-color: #d0bfff; }
         .cognitive.selected { background-color: #845ef7; }
         .creative { background-color: #ffd5e5; }
-        .creative.selected { background-color: #ff8eb7; }
+        .creative.selected { background-color: #ff8eb7; } 
         .marketing { background-color: #ffcccb; }
         .marketing.selected { background-color: #ff6b6b; }
+        .businessKnowledge { background-color: #eca594; }
+        .businessKnowledge.selected { background-color: #dd9037; }
+        .interpersonal { background-color: #ffbcbc; }
+        .interpersonal.selected { background-color: #f74da2; }
 
         #result {
             margin-top: 20px;
@@ -195,6 +199,27 @@
       "ブランド戦略", 
       "キャンペーン企画"
     ] 
+  },
+  businessKnowledge: { 
+    name: "ビジネス知識系", 
+    skills: [
+      "ビジネス戦略", 
+      "財務知識", 
+      "マーケット分析", 
+      "業界知識", 
+      "経営管理"
+    ] 
+  },
+  interpersonal: { 
+    name: "対人関係系", 
+    skills: [
+      "共感力", 
+      "傾聴力", 
+      "協調性", 
+      "ネットワーキング", 
+      "文化的感受性",
+      "柔軟性"
+    ] 
   }
 };
 
@@ -283,13 +308,7 @@ const jobs = [
         description: "製造ラインでの作業を担当し、製品の品質管理や生産効率の向上に貢献します。",
         categories: ["personal", "management"]
     },
-    { 
-        name: "人材系総合職", 
-        skills: ["コミュニケーション能力", "リーダーシップ", "戦略立案", "人材育成", "問題解決能力", "顧客理解", "分析力"],
-        description: "人材関連の業務を担当し、採用や教育・研修などの人材管理を行います。",
-        categories: ["communication", "management", "cognitive"]
-    },
-    { 
+        { 
         name: "人材系派遣ワーカー", 
         skills: ["コミュニケーション能力", "適応力", "ストレス耐性", "チームワーク", "積極性", "継続的学習"],
         description: "派遣先での業務を担当し、迅速な適応と柔軟な対応が求められます。",
@@ -306,6 +325,36 @@ const jobs = [
         skills: ["交渉力", "顧客理解", "市場調査", "問題解決能力", "プレゼンテーションスキル", "データ分析"],
         description: "特定の分野に特化した商社での営業や取引先との調整業務を担当します。",
         categories: ["communication", "marketing", "cognitive"]
+    },
+    { 
+        name: "人材系総合職", 
+        skills: ["コミュニケーション能力", "リーダーシップ", "戦略立案", "人材育成", "問題解決能力", "顧客理解", "分析力", "共感力", "傾聴力", "協調性"],
+        description: "採用、教育・研修、人事制度の設計など、幅広い人材関連業務を担当します。",
+        categories: ["communication", "management", "cognitive", "interpersonal"]
+    },
+    { 
+        name: "一般的なコンサルタント職", 
+        skills: ["問題解決能力", "分析力", "プレゼンテーションスキル", "ビジネス戦略", "コミュニケーション能力", "創造性", "批判的思考", "マーケット分析", "柔軟性"],
+        description: "クライアント企業の経営課題を分析し、解決策を提案・実行支援する役割を担います。",
+        categories: ["cognitive", "communication", "businessKnowledge", "creative", "interpersonal"]
+    },
+    { 
+        name: "営業アシスタント職", 
+        skills: ["コミュニケーション能力", "パソコンスキル", "時間管理", "組織力", "顧客理解", "適応力"],
+        description: "営業担当者のサポート業務を行い、顧客対応や事務作業を担当します。入社しやすい仕事の一つです。",
+        categories: ["communication", "technical", "management", "personal"]
+    },
+    { 
+        name: "カスタマーサポート職", 
+        skills: ["コミュニケーション能力", "問題解決能力", "共感力", "傾聴力", "ストレス耐性", "パソコンスキル"],
+        description: "顧客からの問い合わせや苦情に対応し、製品やサービスのサポートを提供します。比較的入社しやすい職種です。",
+        categories: ["communication", "cognitive", "interpersonal", "personal", "technical"]
+    },
+    { 
+        name: "Web制作アシスタント職", 
+        skills: ["パソコンスキル", "創造性", "適応力", "継続的学習", "チームワーク", "時間管理"],
+        description: "Webデザイナーやエンジニアのサポート業務を行い、簡単なコーディングや画像編集などを担当します。IT業界への入門的な職種です。",
+        categories: ["technical", "creative", "personal", "management"]
     }
 ];
 
@@ -407,8 +456,11 @@ function findMatchingJobs() {
         ));
         const categoryMatchRate = job.categories.filter(cat => userCategories.has(cat)).length / job.categories.length;
         
-        // 総合スコアの計算（マッチ率、関連率、カテゴリーマッチ度の重み付け平均）
-        const score = (matchRate * 0.4 + relevanceRate * 0.3 + categoryMatchRate * 0.3) * 100;
+        // 職種の入社のしやすさを考慮（新しく追加した職種にボーナスを与える）
+        const entryLevelBonus = ["営業アシスタント職", "カスタマーサポート職", "Web制作アシスタント職"].includes(job.name) ? 0.1 : 0;
+        
+        // 総合スコアの計算（マッチ率、関連率、カテゴリーマッチ度、入社のしやすさの重み付け平均）
+        const score = (matchRate * 0.35 + relevanceRate * 0.25 + categoryMatchRate * 0.3 + entryLevelBonus * 0.1) * 100;
         
         return { 
             ...job, 
