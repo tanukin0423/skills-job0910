@@ -5,105 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>あなたの適職診断 - 拡張版</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h1, h2 {
-            color: #4a4a4a;
-            text-align: center;
-        }
-        .skill-category {
-            margin-bottom: 20px;
-        }
-        .category-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-            color: #2c3e50;
-        }
-        .skill-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-        }
-        .skill-item {
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            font-size: 0.9em;
-        }
-        .skill-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .skill-item.selected {
-            color: white;
-            font-weight: bold;
-        }
-        /* スキルカテゴリー別の色 */
-        .communication { background-color: #ffcccb; }
-        .communication.selected { background-color: #ff6b6b; }
-        .technical { background-color: #bce6ff; }
-        .technical.selected { background-color: #4dabf7; }
-        .personal { background-color: #f5a2e3; }
-        .personal.selected { background-color: #d82d96; }
-        .management { background-color: #ffd8a8; }
-        .management.selected { background-color: #ffa94d; }
-        .cognitive { background-color: #d0bfff; }
-        .cognitive.selected { background-color: #845ef7; }
-        .creative { background-color: #ffd5e5; }
-        .creative.selected { background-color: #ff8eb7; } 
-        .marketing { background-color: #ffcccb; }
-        .marketing.selected { background-color: #ff6b6b; }
-        .businessKnowledge { background-color: #eca594; }
-        .businessKnowledge.selected { background-color: #dd9037; }
-        .interpersonal { background-color: #ffbcbc; }
-        .interpersonal.selected { background-color: #f74da2; }
+        /* 基本スタイリング */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
 
-        #result {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #e8f5e9;
-            border-radius: 5px;
-            display: none;
-        }
-        .job-result {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        button {
-            display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+    color: #4a4a4a;
+    text-align: center;
+}
+
+.skill-category {
+    margin-bottom: 20px;
+}
+
+.category-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #2c3e50;
+}
+
+.skill-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.skill-item {
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    font-size: 0.9em;
+    position: relative; /* ポップアップ用の親要素として */
+}
+
+.skill-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.skill-item.selected {
+    color: white;
+    font-weight: bold;
+}
+
+/* スキルカテゴリー別の色 */
+.communication { background-color: #ffcccb; }
+.communication.selected { background-color: #ff6b6b; }
+.technical { background-color: #bce6ff; }
+.technical.selected { background-color: #4dabf7; }
+.personal { background-color: #f5a2e3; }
+.personal.selected { background-color: #d82d96; }
+.management { background-color: #ffd8a8; }
+.management.selected { background-color: #ffa94d; }
+.cognitive { background-color: #d0bfff; }
+.cognitive.selected { background-color: #845ef7; }
+.creative { background-color: #ffd5e5; }
+.creative.selected { background-color: #ff8eb7; }
+.marketing { background-color: #c0efb2; }
+.marketing.selected { background-color: #53db4c; }
+.businessKnowledge { background-color: #8188e8; }
+.businessKnowledge.selected { background-color: #4837dd; }
+.interpersonal { background-color: #ffbcbc; }
+.interpersonal.selected { background-color: #f74da2; }
+
+/* ツールチップのスタイリング */
+.tooltip {
+    display: none; /* 初期状態では非表示 */
+    position: absolute;
+    bottom: 100%; /* 上に表示する */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px;
+    background-color: #333;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.skill-item:hover .tooltip {
+    display: block; /* ホバー時に表示 */
+}
+
+/* モバイルデバイス向けのレスポンシブデザイン */
+@media (max-width: 768px) {
+    .skill-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .skill-item {
+        font-size: 0.8em;
+    }
+}
+
+#result {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #e8f5e9;
+    border-radius: 5px;
+    display: none;
+}
+
+.job-result {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button.save {
+    background-color: #007bff; /* 保存ボタンの色 */
+}
+
+button.save:hover {
+    background-color: #0056b3; /* 保存ボタンのホバー時の色 */
+}
+
     </style>
 </head>
 <body>
@@ -113,112 +167,113 @@
         <div id="skillCategories"></div>
         <button onclick="findMatchingJobs()">適職を診断する</button>
         <div id="result"></div>
+        <button id="saveResultsButton">結果を保存</button>
     </div>
 
     <script>
-        const skillCategories = {
+       const skillCategories = {
   communication: { 
     name: "コミュニケーション系", 
     skills: [
-      "コミュニケーション能力", 
-      "交渉力", 
-      "プレゼンテーションスキル", 
-      "リーダーシップ", 
-      "チームワーク", 
-      "顧客理解"
+      { name: "コミュニケーション能力", description: "他者と効果的に情報を交換し、相互理解を深める力です。" },
+      { name: "交渉力", description: "意見の違いを調整し、双方が納得できる解決策を見つける能力です。" },
+      { name: "プレゼンテーションスキル", description: "明確かつ説得力のある方法で情報を伝える力です。" },
+      { name: "リーダーシップ", description: "チームやプロジェクトを導き、目標達成に向けてメンバーを動かす能力です。" },
+      { name: "チームワーク", description: "他者と協力し、チーム全体の成果を最大化する力です。" },
+      { name: "顧客理解", description: "顧客のニーズや期待を正確に把握し、サービスや製品に反映する能力です。" }
     ] 
   },
   technical: { 
     name: "技術系", 
     skills: [
-      "パソコンスキル", 
-      "プログラミング", 
-      "データ分析", 
-      "ネットワーク管理", 
-      "セキュリティ知識", 
-      "クラウド技術", 
-      "AI・機械学習"
+      { name: "パソコンスキル", description: "基本的なソフトウェアやオペレーティングシステムを操作する技術です。" },
+      { name: "プログラミング", description: "コンピュータ言語を用いてシステムやアプリケーションを開発する能力です。" },
+      { name: "データ分析", description: "データを解析し、意味のある洞察を引き出す力です。" },
+      { name: "ネットワーク管理", description: "コンピュータネットワークの構築、保守、最適化を行う能力です。" },
+      { name: "セキュリティ知識", description: "システムやデータを保護するための技術や知識です。" },
+      { name: "クラウド技術", description: "クラウドプラットフォームを活用してデータやサービスを管理する技術です。" },
+      { name: "AI・機械学習", description: "人工知能や機械学習技術を理解し、応用する能力です。" }
     ] 
   },
   personal: { 
     name: "個人特性系", 
     skills: [
-      "ストレス耐性", 
-      "体力", 
-      "適応力", 
-      "継続的学習", 
-      "自己管理能力", 
-      "責任感", 
-      "誠実性", 
-      "積極性"
+      { name: "ストレス耐性", description: "プレッシャーの下でも冷静に対応できる能力です。" },
+      { name: "体力", description: "長時間の作業や体力を要する業務に耐える力です。" },
+      { name: "適応力", description: "変化する環境に迅速に対応し、新しい状況に順応する力です。" },
+      { name: "継続的学習", description: "絶え間なく新しい知識を習得し続ける姿勢です。" },
+      { name: "自己管理能力", description: "自身の時間やエネルギーを効率的に管理し、目標に向かう力です。" },
+      { name: "責任感", description: "自分の行動や決定に責任を持ち、結果に対処する姿勢です。" },
+      { name: "誠実性", description: "正直で信頼できる態度を持ち続ける能力です。" },
+      { name: "積極性", description: "自ら進んで行動し、新しい機会を追求する力です。" }
     ] 
   },
   management: { 
     name: "マネジメント系", 
     skills: [
-      "組織力", 
-      "時間管理", 
-      "目標設定", 
-      "リスク管理", 
-      "マルチタスク能力", 
-      "プロジェクト管理", 
-      "人材育成", 
-      "戦略立案", 
-      "品質管理"
+      { name: "組織力", description: "チームやリソースを効果的に管理し、効率的に目標を達成する能力です。" },
+      { name: "時間管理", description: "限られた時間で効果的にタスクを完了する力です。" },
+      { name: "目標設定", description: "現実的かつ達成可能な目標を設定し、その実現に向けて計画する力です。" },
+      { name: "リスク管理", description: "潜在的なリスクを評価し、リスクを最小化する戦略を立てる能力です。" },
+      { name: "マルチタスク能力", description: "同時に複数のタスクを効果的に処理する力です。" },
+      { name: "プロジェクト管理", description: "プロジェクトの計画、実行、完了を統制する能力です。" },
+      { name: "人材育成", description: "チームメンバーの能力を引き出し、成長を促進する力です。" },
+      { name: "戦略立案", description: "目標を達成するための長期的な戦略を考案する能力です。" },
+      { name: "品質管理", description: "製品やサービスの品質を維持・向上させるための技術やプロセスです。" }
     ] 
   },
   cognitive: { 
     name: "思考系", 
     skills: [
-      "問題解決能力", 
-      "分析力", 
-      "論理的思考", 
-      "システム思考", 
-      "戦略的思考",
-      "客観的判断力" // "客観的判断思考"を"客観的判断力"に変更
+      { name: "問題解決能力", description: "複雑な問題を識別し、効果的な解決策を見つける力です。" },
+      { name: "分析力", description: "情報を細分化し、意味のあるパターンや洞察を見つけ出す能力です。" },
+      { name: "論理的思考", description: "客観的かつ合理的に考える力です。" },
+      { name: "システム思考", description: "システム全体を理解し、相互に関連する要素を把握する能力です。" },
+      { name: "戦略的思考", description: "目標を達成するために長期的な視野で計画を立てる力です。" },
+      { name: "客観的判断力", description: "事実に基づいて公平に状況を評価し、結論を出す能力です。" }
     ] 
   },
   creative: { 
     name: "創造系", 
     skills: [
-      "創造性", 
-      "イノベーション力", 
-      "デザイン思考", 
-      "ビジュアライゼーション", 
-      "アイデア創出"
+      { name: "創造性", description: "新しいアイデアやコンセプトを生み出す力です。" },
+      { name: "イノベーション力", description: "既存の方法や技術を革新し、新しい価値を創造する力です。" },
+      { name: "デザイン思考", description: "問題を解決するためにユーザー中心の視点で考える能力です。" },
+      { name: "ビジュアライゼーション", description: "情報を視覚的に表現し、効果的に伝える力です。" },
+      { name: "アイデア創出", description: "新しい概念や解決策を発想する能力です。" }
     ] 
   },
   marketing: { 
     name: "マーケティング系", 
     skills: [
-      "デジタル広告", 
-      "SEO", 
-      "コンテンツマーケティング", 
-      "ソーシャルメディア運用",
-      "市場調査", 
-      "ブランド戦略", 
-      "キャンペーン企画"
+      { name: "デジタル広告", description: "オンライン広告を活用して製品やサービスを効果的に宣伝する力です。" },
+      { name: "SEO", description: "検索エンジンでの順位を向上させ、ウェブサイトへのトラフィックを増やす技術です。" },
+      { name: "コンテンツマーケティング", description: "価値あるコンテンツを提供して顧客との信頼関係を築く力です。" },
+      { name: "ソーシャルメディア運用", description: "SNSを効果的に活用してブランドの認知度を高める力です。" },
+      { name: "市場調査", description: "市場のトレンドや顧客ニーズを分析して、ビジネス戦略に反映させる能力です。" },
+      { name: "ブランド戦略", description: "ブランドの価値を高め、消費者に好印象を与えるための戦略を立てる力です。" },
+      { name: "キャンペーン企画", description: "販売促進や製品認知度向上を目的としたキャンペーンを計画する力です。" }
     ] 
   },
   businessKnowledge: { 
     name: "ビジネス知識系", 
     skills: [
-      "ビジネス戦略", 
-      "財務知識", 
-      "マーケット分析", 
-      "業界知識", 
-      "経営管理"
+      { name: "ビジネス戦略", description: "企業の成長や競争優位性を確保するための長期的な計画を立てる能力です。" },
+      { name: "財務知識", description: "企業の財務状態を理解し、資金運用を最適化する知識です。" },
+      { name: "マーケット分析", description: "市場の動向や競合状況を分析し、ビジネスチャンスを見つける力です。" },
+      { name: "業界知識", description: "特定の業界に関する知識やトレンドを把握する力です。" },
+      { name: "経営管理", description: "企業の運営や経営資源を効率的に管理する能力です。" }
     ] 
   },
   interpersonal: { 
     name: "対人関係系", 
     skills: [
-      "共感力", 
-      "傾聴力", 
-      "協調性", 
-      "ネットワーキング", 
-      "文化的感受性",
-      "柔軟性"
+      { name: "共感力", description: "他者の感情や視点を理解し、共感する力です。" },
+      { name: "傾聴力", description: "他者の話を注意深く聞き、理解する力です。" },
+      { name: "協調性", description: "他者と調和して働き、良好な関係を築く力です。" },
+      { name: "ネットワーキング", description: "人脈を構築し、効果的に活用する能力です。" },
+      { name: "文化的感受性", description: "異なる文化や価値観を理解し、尊重する力です。" },
+      { name: "柔軟性", description: "多様な状況に適応し、柔軟に対応する力です。" }
     ] 
   }
 };
@@ -358,7 +413,7 @@ const jobs = [
     }
 ];
 
-        function displaySkills() {
+function displaySkills() {
             const skillCategoriesDiv = document.getElementById('skillCategories');
             for (let category in skillCategories) {
                 const categoryDiv = document.createElement('div');
@@ -369,7 +424,9 @@ const jobs = [
                 skillCategories[category].skills.forEach(skill => {
                     const skillItem = document.createElement('div');
                     skillItem.className = `skill-item ${category}`;
-                    skillItem.textContent = skill;
+                    skillItem.innerHTML = `
+                        <strong>${skill.name}</strong>
+                        <div class="tooltip">${skill.description}</div>`;
                     skillItem.onclick = function() {
                         this.classList.toggle('selected');
                     };
@@ -381,72 +438,84 @@ const jobs = [
         }
 
         function findMatchingJobs() {
-    const selectedSkills = Array.from(document.querySelectorAll('.skill-item.selected')).map(item => item.textContent);
-    const matchingJobs = jobs.map(job => {
-        const matchingSkillsCount = job.skills.filter(skill => selectedSkills.includes(skill)).length;
-        const jobSkillsCount = job.skills.length;
-        const selectedSkillsCount = selectedSkills.length;
-        
-        // スキルのマッチ率を計算（職業が必要とするスキルのうち、ユーザーが持つスキルの割合）
-        const matchRate = matchingSkillsCount / jobSkillsCount;
-        
-        // ユーザーが選択したスキルのうち、職業に関連するスキルの割合
-        const relevanceRate = matchingSkillsCount / selectedSkillsCount;
-        
-        // カテゴリーマッチ度を計算
-        const userCategories = new Set(selectedSkills.flatMap(skill => 
-            Object.entries(skillCategories).filter(([_, cat]) => cat.skills.includes(skill)).map(([key, _]) => key)
-        ));
-        const categoryMatchRate = job.categories.filter(cat => userCategories.has(cat)).length / job.categories.length;
-        
-        // 完全マッチボーナスを計算
-        const perfectMatchBonus = matchingSkillsCount === jobSkillsCount ? 1 : 0;
-        
-        // 総合スコアの計算
-        let score = (matchRate * 0.4 + relevanceRate * 0.3 + categoryMatchRate * 0.3) * 100;
-        
-        // 完全マッチの場合、スコアを100%にする
-        if (perfectMatchBonus === 1) {
-            score = 100;
+            const selectedSkills = Array.from(document.querySelectorAll('.skill-item.selected')).map(item => item.querySelector('strong').textContent);
+            const matchingJobs = jobs.map(job => {
+                const matchingSkillsCount = job.skills.filter(skill => selectedSkills.includes(skill)).length;
+                const jobSkillsCount = job.skills.length;
+                const selectedSkillsCount = selectedSkills.length;
+
+                const matchRate = matchingSkillsCount / jobSkillsCount;
+                const relevanceRate = matchingSkillsCount / selectedSkillsCount;
+
+                const userCategories = new Set(selectedSkills.flatMap(skill => 
+                    Object.entries(skillCategories).filter(([_, cat]) => cat.skills.some(s => s.name === skill)).map(([key, _]) => key)
+                ));
+                const categoryMatchRate = job.categories.filter(cat => userCategories.has(cat)).length / job.categories.length;
+
+                const perfectMatchBonus = matchingSkillsCount === jobSkillsCount ? 1 : 0;
+
+                let score = (matchRate * 0.4 + relevanceRate * 0.3 + categoryMatchRate * 0.3) * 100;
+                if (perfectMatchBonus === 1) {
+                    score = 100;
+                }
+
+                return { 
+                    ...job, 
+                    matchPercentage: score, 
+                    matchingSkillsCount, 
+                    jobSkillsCount,
+                    categoryMatchRate,
+                    isPerfectMatch: perfectMatchBonus === 1
+                };
+            }).sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+            displayResults(matchingJobs.slice(0, 5));
         }
-        
-        return { 
-            ...job, 
-            matchPercentage: score, 
-            matchingSkillsCount, 
-            jobSkillsCount,
-            categoryMatchRate,
-            isPerfectMatch: perfectMatchBonus === 1
-        };
-    }).sort((a, b) => b.matchPercentage - a.matchPercentage);
 
-    displayResults(matchingJobs.slice(0, 5));
-}
+        function displayResults(matchingJobs) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<h2>あなたにおすすめの職業</h2>';
+            matchingJobs.forEach(job => {
+                const matchingSkills = job.skills.filter(skill => 
+                    Array.from(document.querySelectorAll('.skill-item.selected')).map(item => item.querySelector('strong').textContent).includes(skill)
+                );
+                const missingSkills = job.skills.filter(skill => !matchingSkills.includes(skill));
 
-function displayResults(matchingJobs) {
+                resultDiv.innerHTML += `
+                    <div class="job-result">
+                        <h3>${job.name} (マッチ度: ${job.matchPercentage.toFixed(1)}%${job.isPerfectMatch ? ' - 完全マッチ!' : ''})</h3>
+                        <p>${job.description}</p>
+                        <p><strong>マッチしたスキル (${job.matchingSkillsCount}/${job.jobSkillsCount}):</strong> ${matchingSkills.join(', ')}</p>
+                        <p><strong>さらに伸ばすとよいスキル:</strong> ${missingSkills.length > 0 ? missingSkills.join(', ') : 'なし（完全マッチ）'}</p>
+                        <p><strong>関連する分野:</strong> ${job.categories.map(cat => skillCategories[cat].name).join(', ')}</p>
+                        <p><strong>分野マッチ度:</strong> ${(job.categoryMatchRate * 100).toFixed(1)}%</p>
+                    </div>
+                `;
+            });
+            resultDiv.style.display = 'block';
+        }
+
+        function saveResultsAsText() {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '<h2>あなたにおすすめの職業</h2>';
-    matchingJobs.forEach(job => {
-        const matchingSkills = job.skills.filter(skill => 
-            Array.from(document.querySelectorAll('.skill-item.selected')).map(item => item.textContent).includes(skill)
-        );
-        const missingSkills = job.skills.filter(skill => !matchingSkills.includes(skill));
-        
-        resultDiv.innerHTML += `
-            <div class="job-result">
-                <h3>${job.name} (マッチ度: ${job.matchPercentage.toFixed(1)}%${job.isPerfectMatch ? ' - 完全マッチ!' : ''})</h3>
-                <p>${job.description}</p>
-                <p><strong>マッチしたスキル (${job.matchingSkillsCount}/${job.jobSkillsCount}):</strong> ${matchingSkills.join(', ')}</p>
-                <p><strong>さらに伸ばすとよいスキル:</strong> ${missingSkills.length > 0 ? missingSkills.join(', ') : 'なし（完全マッチ）'}</p>
-                <p><strong>関連する分野:</strong> ${job.categories.map(cat => skillCategories[cat].name).join(', ')}</p>
-                <p><strong>分野マッチ度:</strong> ${(job.categoryMatchRate * 100).toFixed(1)}%</p>
-            </div>
-        `;
-    });
-    resultDiv.style.display = 'block';
+    const resultsText = resultDiv.innerText; // HTMLをテキストとして抽出
+
+    // テキストファイルを作成
+    const blob = new Blob([resultsText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'results.txt'; // 保存するファイル名
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
-window.onload = displaySkills;
+document.getElementById('saveResultsButton').onclick = saveResultsAsText;
+
+
+        window.onload = displaySkills;
     </script>
+
 </body>
 </html>
