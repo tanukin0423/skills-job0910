@@ -5,159 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>あなたの適職診断 - 拡張版</title>
     <style>
-        /* 基本スタイリング */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-}
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #4a4a4a;
+            text-align: center;
+        }
+        .skill-category {
+            margin-bottom: 20px;
+        }
+        .category-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+        .skill-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .skill-item {
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .skill-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .skill-item.selected {
+            color: white;
+            font-weight: bold;
+        }
+        /* スキルカテゴリー別の色 */
+        .communication { background-color: #ffcccb; }
+        .communication.selected { background-color: #ff6b6b; }
+        .technical { background-color: #bce6ff; }
+        .technical.selected { background-color: #4dabf7; }
+        .personal { background-color: #f5a2e3; }
+        .personal.selected { background-color: #d82d96; }
+        .management { background-color: #ffd8a8; }
+        .management.selected { background-color: #ffa94d; }
+        .cognitive { background-color: #d0bfff; }
+        .cognitive.selected { background-color: #845ef7; }
+        .creative { background-color: #ffd5e5; }
+        .creative.selected { background-color: #ff8eb7; } 
+        .marketing { background-color: #c0efb2; }
+        .marketing.selected { background-color: #53db4c; }
+        .businessKnowledge { background-color: #8188e8; }
+        .businessKnowledge.selected { background-color: #4837dd; }
+        .interpersonal { background-color: #ffbcbc; }
+        .interpersonal.selected { background-color: #f74da2; }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-h1, h2 {
-    color: #4a4a4a;
-    text-align: center;
-}
-
-.skill-category {
-    margin-bottom: 20px;
-}
-
-.category-title {
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 1.2em;
-    color: #2c3e50;
-}
-
-.skill-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-}
-
-.skill-item {
-    padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-align: center;
-    font-size: 0.9em;
-    position: relative; /* ポップアップ用の親要素として */
-}
-
-.skill-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.skill-item.selected {
-    color: white;
-    font-weight: bold;
-}
-
-/* スキルカテゴリー別の色 */
-.communication { background-color: #ffcccb; }
-.communication.selected { background-color: #ff6b6b; }
-.technical { background-color: #bce6ff; }
-.technical.selected { background-color: #4dabf7; }
-.personal { background-color: #f5a2e3; }
-.personal.selected { background-color: #d82d96; }
-.management { background-color: #ffd8a8; }
-.management.selected { background-color: #ffa94d; }
-.cognitive { background-color: #d0bfff; }
-.cognitive.selected { background-color: #845ef7; }
-.creative { background-color: #ffd5e5; }
-.creative.selected { background-color: #ff8eb7; }
-.marketing { background-color: #c0efb2; }
-.marketing.selected { background-color: #53db4c; }
-.businessKnowledge { background-color: #8188e8; }
-.businessKnowledge.selected { background-color: #4837dd; }
-.interpersonal { background-color: #ffbcbc; }
-.interpersonal.selected { background-color: #f74da2; }
-
-/* ツールチップのスタイリング */
-.tooltip {
-    display: none; /* 初期状態では非表示 */
-    position: absolute;
-    bottom: 100%; /* 上に表示する */
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 5px;
-    background-color: #333;
-    color: white;
-    border-radius: 5px;
-    font-size: 0.8em;
-    white-space: nowrap;
-    z-index: 1;
-}
-
-.skill-item:hover .tooltip {
-    display: block; /* ホバー時に表示 */
-}
-
-/* モバイルデバイス向けのレスポンシブデザイン */
-@media (max-width: 768px) {
-    .skill-list {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-
-    .skill-item {
-        font-size: 0.8em;
-    }
-}
-
-#result {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #e8f5e9;
-    border-radius: 5px;
-    display: none;
-}
-
-.job-result {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-button {
-    display: block;
-    width: 200px;
-    margin: 20px auto;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-button.save {
-    background-color: #007bff; /* 保存ボタンの色 */
-}
-
-button.save:hover {
-    background-color: #0056b3; /* 保存ボタンのホバー時の色 */
-}
-
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            display: none;
+        }
+        .job-result {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -167,7 +113,6 @@ button.save:hover {
         <div id="skillCategories"></div>
         <button onclick="findMatchingJobs()">適職を診断する</button>
         <div id="result"></div>
-        <button id="saveResultsButton">結果を保存</button>
     </div>
 
     <script>
@@ -424,9 +369,7 @@ function displaySkills() {
                 skillCategories[category].skills.forEach(skill => {
                     const skillItem = document.createElement('div');
                     skillItem.className = `skill-item ${category}`;
-                    skillItem.innerHTML = `
-                        <strong>${skill.name}</strong>
-                        <div class="tooltip">${skill.description}</div>`;
+                    skillItem.innerHTML = `<strong>${skill.name}</strong><br><small>${skill.description}</small>`;
                     skillItem.onclick = function() {
                         this.classList.toggle('selected');
                     };
@@ -494,25 +437,6 @@ function displaySkills() {
             });
             resultDiv.style.display = 'block';
         }
-
-        function saveResultsAsText() {
-    const resultDiv = document.getElementById('result');
-    const resultsText = resultDiv.innerText; // HTMLをテキストとして抽出
-
-    // テキストファイルを作成
-    const blob = new Blob([resultsText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'results.txt'; // 保存するファイル名
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-document.getElementById('saveResultsButton').onclick = saveResultsAsText;
-
 
         window.onload = displaySkills;
     </script>
