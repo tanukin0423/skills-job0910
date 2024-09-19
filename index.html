@@ -113,6 +113,7 @@
         <div id="skillCategories"></div>
         <button onclick="findMatchingJobs()">適職を診断する</button>
         <div id="result"></div>
+        <button id="saveResultsButton">結果を保存</button>
     </div>
 
     <script>
@@ -437,6 +438,23 @@ function displaySkills() {
             });
             resultDiv.style.display = 'block';
         }
+        function saveResultsAsText() {
+    const resultDiv = document.getElementById('result');
+    const resultsText = resultDiv.innerText; // HTMLをテキストとして抽出
+
+    // テキストファイルを作成
+    const blob = new Blob([resultsText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'results.txt'; // 保存するファイル名
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+document.getElementById('saveResultsButton').onclick = saveResultsAsText;
 
         window.onload = displaySkills;
     </script>
