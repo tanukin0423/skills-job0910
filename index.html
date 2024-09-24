@@ -109,11 +109,11 @@
 <body>
     <div class="container">
         <h1>あなたの適職診断 - 拡張版</h1>
-        <p>以下のスキルリストから、あなたが持っている能力（５段階で４以上）や、または個人の性格・傾向（５段階で４以上）の項目ルを選んでください（複数選択可）：</p>
-        <p>各項目について、５つ以上該当する場合は、少し自身の評価を厳しく評価し４つ以内にしてください。一方、選ぶ項目が１つもないという場合、少し甘めに評価してみてください。：</p>
+        <p>以下のスキルリストから、あなたが持っている、または興味のあるスキルを選んでください（複数選択可）：</p>
         <div id="skillCategories"></div>
         <button onclick="findMatchingJobs()">適職を診断する</button>
         <div id="result"></div>
+        <button id="saveResultsButton">結果を保存</button>
     </div>
 
     <script>
@@ -224,7 +224,140 @@
   }
 };
 
-
+const jobs = [
+    { 
+        name: "営業職", 
+        skills: ["コミュニケーション能力", "交渉力", "目標設定", "顧客理解", "プレゼンテーションスキル", "ストレス耐性", "積極性"],
+        description: "製品やサービスを顧客に提案し、販売する役割。高いコミュニケーション能力と交渉力が求められます。",
+        categories: ["communication", "management", "personal"]
+    },
+    { 
+        name: "販売職", 
+        skills: ["顧客理解", "コミュニケーション能力", "適応力", "ストレス耐性", "積極性", "チームワーク"],
+        description: "顧客に対して商品やサービスを提供し、売上を上げる役割。顧客対応と柔軟な対応力が求められます。",
+        categories: ["communication", "personal"]
+    },
+    { 
+        name: "ルートセールス職", 
+        skills: ["コミュニケーション能力", "顧客理解", "時間管理", "ストレス耐性", "適応力", "自己管理能力"],
+        description: "既存顧客に定期的に訪問し、商品の販売やサービスの提供を行う役割。",
+        categories: ["communication", "management", "personal"]
+    },
+    { 
+        name: "営業事務職", 
+        skills: ["パソコンスキル", "データ分析", "コミュニケーション能力", "時間管理", "マルチタスク能力", "組織力"],
+        description: "営業チームのサポート業務を担当し、営業活動を効率的に進めるための事務作業を行います。",
+        categories: ["technical", "management", "communication"]
+    },
+    { 
+        name: "一般事務職", 
+        skills: ["パソコンスキル", "時間管理", "コミュニケーション能力", "マルチタスク能力", "適応力", "組織力"],
+        description: "一般的な事務作業を担当し、会社の業務を支える役割。基本的な事務スキルと管理能力が求められます。",
+        categories: ["technical", "management", "personal"]
+    },
+    { 
+        name: "不動産賃貸物件顧客サービス職", 
+        skills: ["コミュニケーション能力", "顧客理解", "交渉力", "問題解決能力", "適応力", "ストレス耐性"],
+        description: "不動産物件の賃貸に関する顧客対応を行い、顧客のニーズに応じたサービスを提供します。",
+        categories: ["communication", "personal", "cognitive"]
+    },
+    { 
+        name: "流通・小売系職", 
+        skills: ["顧客理解", "コミュニケーション能力", "時間管理", "チームワーク", "適応力", "ストレス耐性"],
+        description: "流通や小売業での商品販売や在庫管理を行い、顧客満足度を向上させる役割。",
+        categories: ["communication", "management", "personal"]
+    },
+    { 
+        name: "接客型金融職", 
+        skills: ["コミュニケーション能力", "顧客理解", "プレゼンテーションスキル", "問題解決能力", "ストレス耐性", "適応力"],
+        description: "金融商品やサービスを顧客に提供し、接客業務を通じて顧客満足度を高める役割。",
+        categories: ["communication", "personal", "cognitive"]
+    },
+    { 
+        name: "クリエイティブ系IT職", 
+        skills: ["プログラミング", "デザイン思考", "創造性", "イノベーション力", "問題解決能力", "継続的学習"],
+        description: "IT関連のクリエイティブな仕事を担当し、ソフトウェアやアプリケーションのデザイン・開発を行います。",
+        categories: ["technical", "creative", "cognitive"]
+    },
+    { 
+        name: "システム開発系IT職", 
+        skills: ["プログラミング", "データ分析", "ネットワーク管理", "問題解決能力", "論理的思考", "チームワーク", "継続的学習"],
+        description: "システムやアプリケーションの開発を担当し、技術的な問題解決を行います。",
+        categories: ["technical", "cognitive", "communication"]
+    },
+    { 
+        name: "公務員系職", 
+        skills: ["組織力", "時間管理", "リーダーシップ", "問題解決能力", "誠実性", "コミュニケーション能力", "批判的思考"],
+        description: "公的機関での業務を担当し、組織の運営や管理を行います。",
+        categories: ["management", "personal", "cognitive"]
+    },
+    { 
+        name: "物流系総合職", 
+        skills: ["時間管理", "問題解決能力", "組織力", "リーダーシップ", "データ分析", "戦略立案"],
+        description: "物流業務全般を担当し、効率的な物流システムの運用と管理を行います。",
+        categories: ["management", "cognitive", "technical"]
+    },
+    { 
+        name: "物流系現場職", 
+        skills: ["体力", "時間管理", "チームワーク", "適応力", "ストレス耐性", "品質管理"],
+        description: "物流センターなどの現場で、商品の仕分けや配送などを行います。",
+        categories: ["personal", "management"]
+    },
+    { 
+        name: "製造ライン系職", 
+        skills: ["体力", "時間管理", "品質管理", "チームワーク", "適応力", "ストレス耐性"],
+        description: "製造ラインでの作業を担当し、製品の品質管理や生産効率の向上に貢献します。",
+        categories: ["personal", "management"]
+    },
+        { 
+        name: "人材系派遣ワーカー", 
+        skills: ["コミュニケーション能力", "適応力", "ストレス耐性", "チームワーク", "積極性", "継続的学習"],
+        description: "派遣先での業務を担当し、迅速な適応と柔軟な対応が求められます。",
+        categories: ["communication", "personal"]
+    },
+    { 
+        name: "総合商社系職", 
+        skills: ["交渉力", "コミュニケーション能力", "戦略立案", "問題解決能力", "適応力", "リーダーシップ", "データ分析"],
+        description: "商社での営業や調達、取引先との交渉などを担当し、広範なビジネススキルが求められます。",
+        categories: ["communication", "management", "cognitive"]
+    },
+    { 
+        name: "専門商社系職", 
+        skills: ["交渉力", "顧客理解", "市場調査", "問題解決能力", "プレゼンテーションスキル", "データ分析"],
+        description: "特定の分野に特化した商社での営業や取引先との調整業務を担当します。",
+        categories: ["communication", "marketing", "cognitive"]
+    },
+    { 
+        name: "人材系総合職", 
+        skills: ["コミュニケーション能力", "リーダーシップ", "戦略立案", "人材育成", "問題解決能力", "顧客理解", "分析力", "共感力", "傾聴力", "協調性"],
+        description: "採用、教育・研修、人事制度の設計など、幅広い人材関連業務を担当します。",
+        categories: ["communication", "management", "cognitive", "interpersonal"]
+    },
+    { 
+    name: "一般的なコンサルタント職", 
+    skills: ["問題解決能力", "分析力", "プレゼンテーションスキル", "ビジネス戦略", "コミュニケーション能力", "創造性", "客観的判断力", "マーケット分析", "柔軟性"],
+    description: "クライアント企業の経営課題を分析し、解決策を提案・実行支援する役割を担います。",
+    categories: ["cognitive", "communication", "businessKnowledge", "creative", "interpersonal"]
+  },
+    { 
+        name: "営業アシスタント職", 
+        skills: ["コミュニケーション能力", "パソコンスキル", "時間管理", "組織力", "顧客理解", "適応力"],
+        description: "営業担当者のサポート業務を行い、顧客対応や事務作業を担当します。入社しやすい仕事の一つです。",
+        categories: ["communication", "technical", "management", "personal"]
+    },
+    { 
+        name: "カスタマーサポート職", 
+        skills: ["コミュニケーション能力", "問題解決能力", "共感力", "傾聴力", "ストレス耐性", "パソコンスキル"],
+        description: "顧客からの問い合わせや苦情に対応し、製品やサービスのサポートを提供します。比較的入社しやすい職種です。",
+        categories: ["communication", "cognitive", "interpersonal", "personal", "technical"]
+    },
+    { 
+        name: "Web制作アシスタント職", 
+        skills: ["パソコンスキル", "創造性", "適応力", "継続的学習", "チームワーク", "時間管理"],
+        description: "Webデザイナーやエンジニアのサポート業務を行い、簡単なコーディングや画像編集などを担当します。IT業界への入門的な職種です。",
+        categories: ["technical", "creative", "personal", "management"]
+    }
+];
 
 function displaySkills() {
             const skillCategoriesDiv = document.getElementById('skillCategories');
@@ -305,6 +438,23 @@ function displaySkills() {
             });
             resultDiv.style.display = 'block';
         }
+        function saveResultsAsText() {
+    const resultDiv = document.getElementById('result');
+    const resultsText = resultDiv.innerText; // HTMLをテキストとして抽出
+
+    // テキストファイルを作成
+    const blob = new Blob([resultsText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'results.txt'; // 保存するファイル名
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+document.getElementById('saveResultsButton').onclick = saveResultsAsText;
 
         window.onload = displaySkills;
     </script>
